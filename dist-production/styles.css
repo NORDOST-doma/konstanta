@@ -514,6 +514,37 @@ h2 {
   background: #edf3ee;
 }
 
+.custom-map-marker-wrap {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-map-pin {
+  width: 32px;
+  height: 32px;
+  background: #0f4c81;
+  border: 2px solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 4px 10px rgba(15, 76, 129, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.custom-map-pin span {
+  transform: rotate(45deg);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.custom-map-marker-wrap:hover .custom-map-pin,
+.custom-map-marker-wrap.is-active .custom-map-pin {
+  background: #0284c7;
+  transform: rotate(-45deg) scale(1.15);
+}
+
 .map-popup-card {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   padding: 4px;
@@ -1498,4 +1529,21 @@ h2 {
 
 button:active {
   transform: scale(0.97);
+}
+
+/* Demo version badge */
+.demo-footer-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 6px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.1);
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  border-radius: 999px;
+  letter-spacing: 0.01em;
 }

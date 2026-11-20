@@ -514,6 +514,37 @@ h2 {
   background: #edf3ee;
 }
 
+.custom-map-marker-wrap {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-map-pin {
+  width: 32px;
+  height: 32px;
+  background: #0f4c81;
+  border: 2px solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 4px 10px rgba(15, 76, 129, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.custom-map-pin span {
+  transform: rotate(45deg);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.custom-map-marker-wrap:hover .custom-map-pin,
+.custom-map-marker-wrap.is-active .custom-map-pin {
+  background: #0284c7;
+  transform: rotate(-45deg) scale(1.15);
+}
+
 .map-popup-card {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   padding: 4px;

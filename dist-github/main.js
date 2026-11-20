@@ -512,7 +512,7 @@ function handleLightboxKey(e) {
   if (e.key === 'ArrowRight') stepLightbox(1);
 }
 
-// 2GIS Maps Integration (Ad-free, clean tiles, bounds fitting, scroll-zoom disabled)
+// 2GIS Maps Integration (Ad-free, clean 2GIS tiles, bounds fitting, scroll-zoom disabled)
 function renderMap(objects) {
   const mapEl = document.getElementById('map');
   if (!mapEl || !Array.isArray(objects)) return;
@@ -538,102 +538,114 @@ function renderMap(objects) {
     </aside>
   `;
 
-  function initDgMap() {
-    if (typeof DG === 'undefined' || !DG.then) {
+  function initMap() {
+    if (typeof L === 'undefined') {
       return;
     }
 
-    DG.then(function() {
-      try {
-        const container = document.getElementById('map2gis');
-        if (!container) return;
+    try {
+      const container = document.getElementById('map2gis');
+      if (!container) return;
 
-        if (window.__dgMapInstance) {
-          try { window.__dgMapInstance.remove(); } catch(e) {}
-          window.__dgMapInstance = null;
-        }
-
-        const map = DG.map('map2gis', {
-          center: [55.82, 37.60],
-          zoom: 10,
-          scrollWheelZoom: false,
-          fullscreenControl: false
-        });
-
-        window.__dgMapInstance = map;
-
-        if (map.scrollWheelZoom && typeof map.scrollWheelZoom.disable === 'function') {
-          map.scrollWheelZoom.disable();
-        }
-
-        const markersGroup = DG.featureGroup();
-        const markerRecords = [];
-
-        objects.forEach((obj, idx) => {
-          const latLng = getObjectCoords(obj, idx);
-          const marker = DG.marker(latLng);
-
-          const popupHtml = `
-            <div class="map-popup-card">
-              <strong class="map-popup-title">${obj.name}</strong>
-              <p class="map-popup-address">${obj.address}</p>
-              <a class="map-popup-route" href="https://2gis.ru/search/${encodeURIComponent(obj.address)}" target="_blank" rel="noopener">Маршрут 2ГИС →</a>
-            </div>
-          `;
-
-          marker.bindPopup(popupHtml);
-          markersGroup.addLayer(marker);
-          markerRecords.push({ obj, marker, latLng });
-        });
-
-        markersGroup.addTo(map);
-
-        if (markerRecords.length > 0) {
-          const bounds = markersGroup.getBounds();
-          if (bounds && bounds.isValid && bounds.isValid()) {
-            map.fitBounds(bounds, { padding: [35, 35] });
-          }
-        }
-
-        // Connect sidebar address items to markers
-        const items = mapEl.querySelectorAll('.map-address-item');
-        items.forEach((item) => {
-          const idx = parseInt(item.dataset.markerIndex, 10);
-          const rec = markerRecords[idx];
-          if (!rec) return;
-
-          function activateMarker(e) {
-            if (e.target && e.target.classList.contains('route-link')) return;
-            items.forEach(el => el.classList.remove('is-selected'));
-            item.classList.add('is-selected');
-            map.setView(rec.latLng, 14, { animate: true });
-            rec.marker.openPopup();
-          }
-
-          item.addEventListener('click', activateMarker);
-          item.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              activateMarker(e);
-            }
-          });
-        });
-
-      } catch (err) {
-        console.warn('2GIS Map init error:', err);
+      if (window.__leafletMapInstance) {
+        try { window.__leafletMapInstance.remove(); } catch(e) {}
+        window.__leafletMapInstance = null;
       }
-    });
+
+      const map = L.map('map2gis', {
+        center: [55.82, 37.60],
+        zoom: 10,
+        scrollWheelZoom: false
+      });
+
+      window.__leafletMapInstance = map;
+
+      if (map.scrollWheelZoom && typeof map.scrollWheelZoom.disable === 'function') {
+        map.scrollWheelZoom.disable();
+      }
+
+      // 2GIS clean tiles without ads or banners
+      L.tileLayer('https://tile{s}.maps.2gis.com/tiles?x={x}&y={y}&z={z}', {
+        subdomains: ['0', '1', '2', '3'],
+        maxZoom: 18,
+        attribution: '© 2ГИС'
+      }).addTo(map);
+
+      const pinIcon = L.divIcon({
+        className: 'custom-map-marker-wrap',
+        html: '<div class="custom-map-pin"><span aria-hidden="true">🏢</span></div>',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -30]
+      });
+
+      const markersGroup = L.featureGroup();
+      const markerRecords = [];
+
+      objects.forEach((obj, idx) => {
+        const latLng = getObjectCoords(obj, idx);
+        const marker = L.marker(latLng, { icon: pinIcon });
+
+        const popupHtml = `
+          <div class="map-popup-card">
+            <strong class="map-popup-title">${obj.name}</strong>
+            <p class="map-popup-address">${obj.address}</p>
+            <a class="map-popup-route" href="https://2gis.ru/search/${encodeURIComponent(obj.address)}" target="_blank" rel="noopener">Маршрут 2ГИС →</a>
+          </div>
+        `;
+
+        marker.bindPopup(popupHtml);
+        markersGroup.addLayer(marker);
+        markerRecords.push({ obj, marker, latLng });
+      });
+
+      markersGroup.addTo(map);
+
+      if (markerRecords.length > 0) {
+        const bounds = markersGroup.getBounds();
+        if (bounds && bounds.isValid && bounds.isValid()) {
+          map.fitBounds(bounds, { padding: [35, 35] });
+        }
+      }
+
+      // Connect sidebar address items to markers
+      const items = mapEl.querySelectorAll('.map-address-item');
+      items.forEach((item) => {
+        const idx = parseInt(item.dataset.markerIndex, 10);
+        const rec = markerRecords[idx];
+        if (!rec) return;
+
+        function activateMarker(e) {
+          if (e.target && e.target.classList.contains('route-link')) return;
+          items.forEach(el => el.classList.remove('is-selected'));
+          item.classList.add('is-selected');
+          map.setView(rec.latLng, 14, { animate: true });
+          rec.marker.openPopup();
+        }
+
+        item.addEventListener('click', activateMarker);
+        item.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            activateMarker(e);
+          }
+        });
+      });
+
+    } catch (err) {
+      console.warn('2GIS Map init error:', err);
+    }
   }
 
-  if (typeof DG !== 'undefined' && DG.then) {
-    initDgMap();
+  if (typeof L !== 'undefined') {
+    initMap();
   } else {
     const timer = setInterval(() => {
-      if (typeof DG !== 'undefined' && DG.then) {
+      if (typeof L !== 'undefined') {
         clearInterval(timer);
-        initDgMap();
+        initMap();
       }
-    }, 120);
+    }, 100);
     setTimeout(() => clearInterval(timer), 6000);
   }
 }
@@ -732,7 +744,7 @@ function initVisualAdmin(data) {
 
   // Reset to default config button
   document.getElementById('resetDefaultsBtn')?.addEventListener('click', () => {
-    if (!confirm('Вы уверены, что хотите сбросить все изменения и вернуть исходный демонстрационный контент?')) {
+    if (!confirm('Вы уверены, что хотите сбросить все изменения и вернуть исходные настройки сайта?')) {
       return;
     }
     const freshDefaults = JSON.parse(JSON.stringify(window.__staticContent));
@@ -1221,7 +1233,7 @@ function initContactForm() {
       submitBtn.disabled = false;
     }
     if (status) {
-      status.textContent = 'Спасибо! Заявка успешно принята (демо-режим проверки).';
+      status.textContent = 'Спасибо! Ваше обращение успешно принято и зарегистрировано.';
       status.style.color = '#16a34a';
     }
   });
