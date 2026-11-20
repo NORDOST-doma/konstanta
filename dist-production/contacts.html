@@ -31,7 +31,7 @@
           <a href="contacts.html" class="is-active">Контакты</a>
         </nav>
 
-        <a class="header-button" href="tel:+74950000000">Позвонить</a>
+        <a class="header-button" data-contact-call href="tel:+74950000000">Позвонить</a>
       </div>
     </header>
 
@@ -42,22 +42,22 @@
 
         <div class="contact-row">
           <span>Телефон</span>
-          <a href="tel:+74950000000">+7 (495) 000-00-00</a>
+          <a data-contact-phone href="tel:+74950000000">+7 (495) 000-00-00</a>
         </div>
 
         <div class="contact-row">
           <span>E-mail</span>
-          <a href="mailto:info@konstanta.ru">info@konstanta.ru</a>
+          <a data-contact-email href="mailto:info@konstanta.ru">info@konstanta.ru</a>
         </div>
 
         <div class="contact-row">
           <span>Адрес офиса</span>
-          <p>Москва, ул. Московская, д. 12, офис 401</p>
+          <p data-contact-address>г. Москва, ул. Большая Черкизовская, д. 1</p>
         </div>
 
         <div class="contact-row">
           <span>Режим работы</span>
-          <p>Пн–Пт: 09:00–18:00</p>
+          <p data-contact-hours>Пн-Пт: 09:00 - 18:00 (Аварийная служба: круглосуточно)</p>
         </div>
       </section>
 
@@ -115,9 +115,13 @@
           <strong>ООО «Константа»</strong>
           <p>Управляющая компания</p>
         </div>
+        <div>
+          <p>Телефон: <span data-contact-phone>+7 (495) 000-00-00</span></p>
+          <p>E-mail: <span data-contact-email>info@konstanta.ru</span></p>
+        </div>
       </div>
     </footer>
 
-    <script src="main.js"></script>
+    <script src="main.js?v=3"></script>
   </body>
 </html>
