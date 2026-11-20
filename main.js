@@ -358,6 +358,9 @@ function renderContacts(contacts) {
   document.querySelectorAll('[data-contact-hours]').forEach((element) => {
     element.textContent = contacts.workHours || '';
   });
+  document.querySelectorAll('[data-contact-call]').forEach((element) => {
+    if (element.tagName === 'A') element.href = `tel:${(contacts.phone || '').replace(/[^+\d]/g, '')}`;
+  });
 }
 
 function renderNews(news) {
