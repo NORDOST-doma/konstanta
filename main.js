@@ -547,7 +547,8 @@ function renderMap(objects) {
       const map = L.map('map2gis', {
         center: [55.82, 37.60],
         zoom: 10,
-        scrollWheelZoom: false
+        scrollWheelZoom: false,
+        attributionControl: false
       });
 
       window.__leafletMapInstance = map;
