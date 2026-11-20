@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Панель администратора | ООО «Константа» (Демо-стенд)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand" aria-label="ООО Константа главная">
+          <span class="brand-mark">К</span>
+          <span class="brand-text">
+            <strong>ООО «Константа»</strong>
+            <small>Управляющая компания</small>
+          </span>
+        </a>
+
+        <nav class="main-nav" aria-label="Основная навигация">
+          <a href="index.html">На сайт</a>
+          <a href="contacts.html">Контакты</a>
+          <a href="admin.html" class="is-active">Панель управления</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="section admin-shell">
+      <div class="container">
+        <div class="admin-header-row">
+          <div>
+            <span class="eyebrow">Администрирование сайта (Демо-стенд)</span>
+            <h1>Панель управления контентом</h1>
+            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #64748b;">
+              Автономный режим: все изменения сохраняются в localStorage браузера и мгновенно применяются на страницах сайта.
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <span id="adminStatus" aria-live="polite" style="font-weight: 700; color: #0284c7;"></span>
+            <button id="resetDefaultsBtn" class="btn btn-secondary" type="button" title="Вернуть исходный JSON-конфиг">🔄 Сбросить к исходным</button>
+            <button id="downloadConfigBtn" class="btn btn-secondary" type="button" title="Скачать текущий конфиг в формате JSON">📥 Скачать config.json</button>
+            <button id="saveAllBtn" class="btn btn-primary" type="button">💾 Сохранить изменения</button>
+          </div>
+        </div>
+
+        <nav class="admin-tabs" role="tablist">
+          <button class="admin-tab is-active" data-tab="objects" type="button">🏢 Объекты</button>
+          <button class="admin-tab" data-tab="services" type="button">🛠 Услуги</button>
+          <button class="admin-tab" data-tab="team" type="button">👥 Сотрудники</button>
+          <button class="admin-tab" data-tab="gallery" type="button">🖼 Галерея</button>
+          <button class="admin-tab" data-tab="news" type="button">📰 Новости</button>
+          <button class="admin-tab" data-tab="contacts" type="button">📞 Контакты</button>
+          <button class="admin-tab" data-tab="inquiries" type="button">📩 Заявки с сайта</button>
+        </nav>
+
+        <section class="admin-section-box">
+          <!-- Tab 1: Objects -->
+          <div id="tab-objects" class="admin-tab-pane">
+            <div class="admin-toolbar">
+              <h2>Объекты управления</h2>
+              <button class="btn btn-primary btn-sm" id="addObjectBtn" type="button">+ Добавить объект</button>
+            </div>
+            <div class="admin-cards-list" id="adminObjectsList"></div>
+          </div>
+
+          <!-- Tab 2: Services -->
+          <div id="tab-services" class="admin-tab-pane" style="display: none;">
+            <div class="admin-toolbar">
+              <h2>Услуги компании</h2>
+              <button class="btn btn-primary btn-sm" id="addServiceBtn" type="button">+ Добавить услугу</button>
+            </div>
+            <div class="admin-cards-list" id="adminServicesList"></div>
+          </div>
+
+          <!-- Tab 3: Team -->
+          <div id="tab-team" class="admin-tab-pane" style="display: none;">
+            <div class="admin-toolbar">
+              <h2>Сотрудники и руководство</h2>
+              <button class="btn btn-primary btn-sm" id="addTeamBtn" type="button">+ Добавить сотрудника</button>
+            </div>
+            <div class="admin-cards-list" id="adminTeamList"></div>
+          </div>
+
+          <!-- Tab 4: Gallery -->
+          <div id="tab-gallery" class="admin-tab-pane" style="display: none;">
+            <div class="admin-toolbar">
+              <h2>Фотографии галереи</h2>
+              <button class="btn btn-primary btn-sm" id="addGalleryBtn" type="button">+ Добавить фото</button>
+            </div>
+            <div class="admin-cards-list" id="adminGalleryList"></div>
+          </div>
+
+          <!-- Tab 5: News -->
+          <div id="tab-news" class="admin-tab-pane" style="display: none;">
+            <div class="admin-toolbar">
+              <h2>Новости и объявления</h2>
+              <button class="btn btn-primary btn-sm" id="addNewsBtn" type="button">+ Добавить новость</button>
+            </div>
+            <div class="admin-cards-list" id="adminNewsList"></div>
+          </div>
+
+          <!-- Tab 6: Contacts -->
+          <div id="tab-contacts" class="admin-tab-pane" style="display: none;">
+            <div class="admin-toolbar">
+              <h2>Контакты организации</h2>
+            </div>
+            <form id="adminContactsForm" class="admin-form-grid" style="max-width: 680px;">
+              <div class="admin-form-group">
+                <label for="admPhone">Телефон компании</label>
+                <input id="admPhone" type="text" value="" placeholder="+7 (495) 000-00-00" required />
+              </div>
+              <div class="admin-form-group">
+                <label for="admEmail">E-mail</label>
+                <input id="admEmail" type="email" value="" placeholder="info@konstanta.ru" required />
+              </div>
+              <div class="admin-form-group">
+                <label for="admAddress">Адрес офиса</label>
+                <input id="admAddress" type="text" value="" placeholder="г. Москва, ул. Примерная, д. 1" required />
+              </div>
+              <div class="admin-form-group">
+                <label for="admHours">Режим работы</label>
+                <input id="admHours" type="text" value="" placeholder="Пн–Пт: 09:00–18:00" required />
+              </div>
+              <button class="btn btn-primary" type="submit" style="justify-self: flex-start;">Сохранить контакты</button>
+            </form>
+          </div>
+
+          <!-- Tab 7: Inquiries -->
+          <div id="tab-inquiries" class="admin-tab-pane" style="display: none;">
+            <div class="admin-toolbar">
+              <h2>Поступившие заявки (демо-журнал в браузере)</h2>
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button class="btn btn-secondary btn-sm" id="refreshInquiriesBtn" type="button">↻ Обновить список</button>
+                <button class="btn btn-sm btn-sm-del" id="clearInquiriesBtn" type="button">🗑 Очистить все заявки</button>
+              </div>
+            </div>
+            <div class="admin-cards-list" id="adminInquiriesList"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Modal Dialog for Add/Edit -->
+    <div id="adminModal" class="admin-dialog" style="display: none;">
+      <div class="admin-dialog-content">
+        <div class="admin-dialog-head">
+          <h3 id="adminModalTitle">Редактирование</h3>
+          <button id="adminModalClose" class="close-btn" type="button" aria-label="Закрыть">×</button>
+        </div>
+        <form id="adminEntityForm" class="admin-form-grid">
+          <div id="adminFormFields"></div>
+          <div style="display: flex; gap: 12px; margin-top: 14px; justify-content: flex-end;">
+            <button type="button" id="adminModalCancel" class="btn btn-secondary">Отмена</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <footer class="site-footer" style="margin-top: 40px;">
+      <div class="container footer-inner">
+        <div>
+          <strong>ООО «Константа»</strong>
+          <p>Управляющая компания</p>
+          <div class="demo-footer-badge">Демонстрационная версия сайта (тестовый стенд)</div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>
